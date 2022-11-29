@@ -1,0 +1,58 @@
+version: "3.0"
+  
+  
+services:
+
+  queue:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "15671:15671"
+      - "5672:5672"
+    volumes:
+      - ./queue/queuedata:/var/lib/rabbitmq
+      - ./queue/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    environment:
+      RABBITMQ_ENABLED_PLUGINS_FILE: /etc/rabbitmq/enabled_plugins
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    
+  graphite:
+    image: graphiteapp/graphite-statsd:1.1.10-4
+    ports:
+      - 80:80
+      - 2003:2003
+      - 8125:8125
+    volumes:
+      - ./storage:/opt/graphite/storage
+    environment:
+      - COLLECTD=1
+      - GRAPHITE_DEBUG=1
+      - REDIS_TAGDB=1
+      - BRUBECK=1
+#    - GOCARBON=1
+#    depends_on:
+#      - db
+  
+  grafana:
+    image: grafana/grafana:9.2.6
+    user: root
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+
+  telegraf:
+    image: telegraf:1.22.4
+    ports:
+      - 8126:8125
+      - 8092:8092
+      - 8094:8094
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro

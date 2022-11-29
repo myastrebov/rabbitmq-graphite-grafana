@@ -1,0 +1,6 @@
+.idea
+*.iml
+queue/queuedata
+queue/plugins
+storage
+grafana
