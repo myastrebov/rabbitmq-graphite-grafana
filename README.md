@@ -1,4 +1,4 @@
-# Настрофка мониторинга для RabbitMQ
+# Настройка мониторинга для RabbitMQ
 
 ## Getting start
 
